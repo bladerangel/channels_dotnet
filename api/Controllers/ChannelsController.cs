@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using api.Models;
 
 namespace api.Controllers
@@ -94,6 +95,12 @@ namespace api.Controllers
       {
         return channel.Secondary;
       }
+    }
+
+    [HttpGet("logos")]
+    public String[] Logos()
+    {
+      return _channels.Select((channel) => channel.Logo).ToArray();
     }
 
   }
