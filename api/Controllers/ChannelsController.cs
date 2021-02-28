@@ -65,7 +65,7 @@ namespace api.Controllers
     private HttpClient _http = new HttpClient();
 
     [HttpGet("{index}")]
-    public async Task<IActionResult> DataSource(int index)
+    public async Task<String> DataSource(int index)
     {
 
       Channel channel = _channels[index];
@@ -79,28 +79,28 @@ namespace api.Controllers
 
           if (exp.Success)
           {
-            return Ok(new { data = exp.Value });
+            return exp.Value;
           }
           else
           {
-            return Ok(new { data = channel.Secondary });
+            return channel.Secondary;
           }
         }
         else
         {
-          return Ok(new { data = channel.Secondary });
+          return channel.Secondary;
         }
       }
       catch (Exception)
       {
-        return Ok(new { data = channel.Secondary });
+        return channel.Secondary;
       }
     }
 
     [HttpGet("logos")]
-    public IActionResult Logos()
+    public String[] Logos()
     {
-      return Ok(new { data = _channels.Select((channel) => channel.Logo).ToArray() });
+      return _channels.Select((channel) => channel.Logo).ToArray();
     }
 
   }
