@@ -75,7 +75,7 @@ namespace api.Controllers
         if (channel.Primary != null)
         {
           String html = await _http.GetStringAsync(channel.Primary);
-          Match exp = Regex.Match(html, "(https://manifest.googlevideo.com/api/manifest/hls_variant.+m3u8)");
+          Match exp = Regex.Match(html, @"(https:\/\/www.youtube.com\/watch\?v=\w+)");
 
           if (exp.Success)
           {
