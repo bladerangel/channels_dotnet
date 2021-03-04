@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using YoutubeDLSharp;
+using YoutubeDLSharp.Options;
 using api.Models;
 
 namespace api.Controllers
@@ -74,25 +76,32 @@ namespace api.Controllers
 
         if (channel.Primary != null)
         {
-          String html = await _http.GetStringAsync(channel.Primary);
-          Match exp = Regex.Match(html, @"https:\/\/manifest\.googlevideo\.com\/api\/manifest\/hls_variant.+m3u8");
 
-          if (exp.Success)
+          String dataSource = "";
+          OptionSet options = new OptionSet()
           {
-            return exp.Value;
-          }
-          else
-          {
-            return channel.Secondary;
-          }
+            Format = "[height=720]",
+            GetUrl = true,
+          };
+
+          YoutubeDLProcess youtubeProcess = new YoutubeDLProcess();
+
+          youtubeProcess.OutputReceived += (o, e) => dataSource = e.Data;
+          youtubeProcess.ErrorReceived += (o, e) => dataSource = channel.Secondary;
+
+          string[] urls = new[] { "https://www.youtube.com/channel/UCfYrK5JU5EznsnK3wQE7iIg/liv" };
+          await youtubeProcess.RunAsync(urls, options);
+
+          return dataSource;
         }
         else
         {
           return channel.Secondary;
         }
       }
-      catch (Exception)
+      catch (Exception e)
       {
+        Console.Write(e);
         return channel.Secondary;
       }
     }
