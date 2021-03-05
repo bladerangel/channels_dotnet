@@ -84,12 +84,12 @@ namespace api.Controllers
             GetUrl = true,
           };
 
-          YoutubeDLProcess youtubeProcess = new YoutubeDLProcess();
+          YoutubeDLProcess youtubeProcess = new YoutubeDLProcess("youtube-dl");
 
           youtubeProcess.OutputReceived += (o, e) => dataSource = e.Data;
           youtubeProcess.ErrorReceived += (o, e) => dataSource = channel.Secondary;
 
-          string[] urls = new[] { "https://www.youtube.com/channel/UCfYrK5JU5EznsnK3wQE7iIg/liv" };
+          string[] urls = new[] { channel.Primary };
           await youtubeProcess.RunAsync(urls, options);
 
           return dataSource;
