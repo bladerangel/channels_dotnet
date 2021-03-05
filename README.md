@@ -4,5 +4,5 @@
 https://github.com/jincod/dotnetcore-buildpack
 
 ## 2) Heroku YoutubeDL Buildpack
-https://github.com/kanhavishva/heroku-buildpack-youtube-dl
+https://github.com/appositum/heroku-buildpack-youtube-dl
 
