@@ -36,7 +36,7 @@ namespace api.Controllers
         Primary:
             "https://www.youtube.com/channel/UCVrKQMmA2ew9LFzeIDaOFgw/live",
         Secondary:
-            "https://demo.cdn.tv.br/media/n/BZfJAde2/a/BZfJAde2/720p/chunks.m3u8?ch=BZfJAde2&t=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTUwMTkxODksImlhdCI6MTYxNTAwMTE4OSwic3ViIjoiZGVmYXVsdCMxNTc2MDgzMjU4In0.f8OdM4_QnU3KqsjQlnMEczvHJ-REpb9gav2PjuurRzU",
+            "https://edge-aws.aovivotv.xyz/hls/s:88.198.239.170/cancaonova_c30749cf_32d9dc99978082f834d0ce88609b9b824dfe697b/playlist.m3u8",
         Logo:
             "https://yt3.ggpht.com/ytc/AAUvwngMRf5HNCB0DfDHOcRqJ_pW_Z67lPtAwh14RdZCJg=s88-c-k-c0x00ffffff-no-rj"),
    new Channel(
@@ -101,7 +101,7 @@ namespace api.Controllers
       }
       catch (Exception e)
       {
-        Console.Write(e);
+        Console.WriteLine(e);
         return channel.Secondary;
       }
     }
