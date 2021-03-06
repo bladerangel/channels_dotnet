@@ -80,7 +80,7 @@ namespace api.Controllers
           String dataSource = "";
           OptionSet options = new OptionSet()
           {
-            Format = "[height=720]",
+            Format = "[height=480]",
             GetUrl = true,
           };
 
