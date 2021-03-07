@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using YoutubeDLSharp;
 using YoutubeDLSharp.Options;
+using Newtonsoft.Json;
+using System.Text;
+using System.Net.Http.Headers;
 using api.Models;
 
 namespace api.Controllers
@@ -36,7 +39,7 @@ namespace api.Controllers
         Primary:
             "https://www.youtube.com/channel/UCVrKQMmA2ew9LFzeIDaOFgw/live",
         Secondary:
-            "https://edge-aws.aovivotv.xyz/hls/s:88.198.239.170/cancaonova_c30749cf_32d9dc99978082f834d0ce88609b9b824dfe697b/playlist.m3u8",
+            "https://demo.cdn.tv.br/media/n/BZfJAde2/a/BZfJAde2/720p/chunks.m3u8?ch=BZfJAde2&t=",
         Logo:
             "https://yt3.ggpht.com/ytc/AAUvwngMRf5HNCB0DfDHOcRqJ_pW_Z67lPtAwh14RdZCJg=s88-c-k-c0x00ffffff-no-rj"),
    new Channel(
@@ -63,8 +66,55 @@ namespace api.Controllers
             "https://yt3.ggpht.com/ytc/AAUvwnhun4onLfGYyvE5RgJUrlCP-IOtCx7iq8w8fNNPnQ=s176-c-k-c0x00ffffff-no-rj-mo")
     };
 
+    private async Task<String> YoutubeChannel(Channel channel)
+    {
+      String dataSource = "";
+      OptionSet options = new OptionSet()
+      {
+        Format = "[height=480]",
+        GetUrl = true,
+      };
 
-    private HttpClient _http = new HttpClient();
+      YoutubeDLProcess youtubeProcess = new YoutubeDLProcess("youtube-dl");
+      youtubeProcess.OutputReceived += (o, e) => dataSource = e.Data;
+      youtubeProcess.ErrorReceived += (o, e) => dataSource = "";
+
+      string[] urls = new[] { channel.Primary };
+      await youtubeProcess.RunAsync(urls, options);
+
+      if (dataSource == "")
+      {
+        return await CdnChannel(channel);
+      }
+      return dataSource;
+    }
+    private async Task<String> CdnChannel(Channel channel)
+    {
+      Match exp = Regex.Match(channel.Secondary, @"(https:\/\/demo.cdn.tv.br\/.+)");
+      Console.WriteLine(exp.Success);
+      if (exp.Success)
+      {
+        HttpClient httpClient = new HttpClient();
+
+        var login = new
+        {
+          username = "cdntv",
+          password = "cdntv"
+        };
+
+        String jsonContent = JsonConvert.SerializeObject(login);
+        StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        HttpResponseMessage response = await httpClient.PostAsync("https://demo.cdn.tv.br/auth", content);
+        String json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        dynamic data = JsonConvert.DeserializeObject(json);
+
+        return channel.Secondary + data.token;
+      }
+      return channel.Secondary;
+    }
+
 
     [HttpGet("{index}")]
     public async Task<String> DataSource(int index)
@@ -73,35 +123,15 @@ namespace api.Controllers
       Channel channel = _channels[index];
       try
       {
-
         if (channel.Primary != null)
         {
+          return await YoutubeChannel(channel);
 
-          String dataSource = "";
-          OptionSet options = new OptionSet()
-          {
-            Format = "[height=480]",
-            GetUrl = true,
-          };
-
-          YoutubeDLProcess youtubeProcess = new YoutubeDLProcess("youtube-dl");
-
-          youtubeProcess.OutputReceived += (o, e) => dataSource = e.Data;
-          youtubeProcess.ErrorReceived += (o, e) => dataSource = channel.Secondary;
-
-          string[] urls = new[] { channel.Primary };
-          await youtubeProcess.RunAsync(urls, options);
-
-          return dataSource;
         }
-        else
-        {
-          return channel.Secondary;
-        }
+        return await CdnChannel(channel);
       }
-      catch (Exception e)
+      catch (Exception)
       {
-        Console.WriteLine(e);
         return channel.Secondary;
       }
     }
