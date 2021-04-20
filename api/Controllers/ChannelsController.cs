@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
@@ -22,7 +22,7 @@ namespace api.Controllers
         new Channel(
     Name: "Rede Vida",
     Primary:
-        "https://www.youtube.com/channel/UC7MUmXqD_kEChxYFME0bdtg/live",
+        "https://www.youtube.com/channel/UC-imeT_wWRmrpeYnhVX4r_g/live",
     Secondary:
         "https://cvd1.cds.ebtcvd.net/live-redevida/smil:redevida.smil/playlist.m3u8",
     Logo:
